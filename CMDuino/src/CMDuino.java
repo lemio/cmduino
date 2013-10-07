@@ -108,12 +108,13 @@ public class CMDuino implements SerialPortEventListener {
 	public void parseString(String inputLine) throws IOException, AWTException{
 		byte[] byteString = inputLine.getBytes();
 		Robot robot = new Robot();
+		System.out.println("Recieved data: " + inputLine);
 		switch(byteString[0]){
 		case 'c':
 			String commandLine = inputLine.substring(2);
-			executeCommand(commandLine);
 			System.out.print("Executing command: ");
 			System.out.println(commandLine);
+			executeCommand(commandLine);			
 		break;
 		case 'm':
 			String[] mousePosition = inputLine.split(" ");
@@ -147,14 +148,18 @@ public class CMDuino implements SerialPortEventListener {
 			System.out.print(byteString[2]);
 			System.out.println("\" pressed");
 		break;
+		case 'v':
+			Audio.setMasterOutputVolume(0.5f);
+			break;
+		default:
+			System.out.println("Command syntax is not reconized");
+		break;
 		}
 		
 			
 	}
-	public static void executeCommand(String commandString) throws IOException{
-		ProcessBuilder pb=new ProcessBuilder(commandString);
-		pb.redirectErrorStream(true);
-		pb.start();
+	public static Process executeCommand(String commandString) throws IOException{
+		return Runtime.getRuntime().exec(commandString);
 	}
 	public static String readLine()
 	{
